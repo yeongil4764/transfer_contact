@@ -3,7 +3,6 @@ import { Body, Controller, Post, Request, UseGuards } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { AppService } from './app.service';
 import { AuthService } from './auth/auth.service';
-import { LocalAuthGuard } from './auth/guard/local-auth.guard';
 
 @Controller()
 export class AppController {
@@ -19,17 +18,9 @@ export class AppController {
     return await this.appService.register(userCreateInput);
   }
 
+  @UseGuards(AuthGuard('local'))
   @Post('login')
-  @UseGuards(AuthGuard('local2'))
   login(@Request() req): any {
-    console.log(req.user);
     return this.authService.login(req.user);
   }
-
-  // @Post('login')
-  // login2(@Body() user: User): any {
-  //   console.log('login');
-
-  //   return this.authService.login(user);
-  // }
 }

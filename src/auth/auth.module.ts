@@ -5,7 +5,6 @@ import { PrismaService } from 'src/prisma/prisma.service';
 import { UserModule } from 'src/user/user.module';
 import { AuthService } from './auth.service';
 import { JwtAuthGuard } from './guard/jwt-auth.guard';
-import { LocalAuthGuard } from './guard/local-auth.guard';
 import { RolesGuard } from './guard/roles.guard';
 import { JwtStrategy } from './strategy/jwt.strategy';
 import { LocalStrategy } from './strategy/local.strategy';
@@ -19,7 +18,7 @@ import { LocalStrategy } from './strategy/local.strategy';
       signOptions: { expiresIn: '1800s' },
     }),
   ],
-  providers: [AuthService, JwtStrategy, RolesGuard, JwtAuthGuard, PrismaService, LocalStrategy, LocalAuthGuard],
+  providers: [AuthService, JwtStrategy, RolesGuard, JwtAuthGuard, PrismaService, LocalStrategy],
   exports: [AuthService]
 })
 export class AuthModule {}
