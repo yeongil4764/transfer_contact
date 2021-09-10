@@ -29,9 +29,9 @@ export class RolesGuard implements CanActivate {
 
     if (controllerRole) {
       if (functionRole) {
-        return user.role.some((role) => role === functionRole);
+        return user.role.some((role) => role === functionRole.toString());
       } else {
-        return user.role.some((role) => role === controllerRole);
+        return user.role.some((role) => role === controllerRole.toString());
       }
     } else {
       throw new UnauthorizedException();

@@ -6,10 +6,16 @@ import {
   Param,
   Post,
   Put,
+  UseGuards,
 } from '@nestjs/common';
 import { Contact, Prisma } from '@prisma/client';
+import { hasRoles } from 'src/auth/decorator/roles.decorator';
+import { JwtAuthGuard } from 'src/auth/guard/jwt-auth.guard';
+import { RolesGuard } from 'src/auth/guard/roles.guard';
 import { ContactsService } from './contacts.service';
 
+@UseGuards(JwtAuthGuard, RolesGuard)
+@hasRoles('USER')
 @Controller('contacts')
 export class ContactsController {
   constructor(private contactsService: ContactsService) {}
@@ -39,6 +45,8 @@ export class ContactsController {
     return await this.contactsService.update(Number(id), updateContactInput);
   }
 
+  @hasRoles('ADMIN')
+  @UseGuards(RolesGuard)
   @Delete('/:id')
   async delete(@Param('id') id): Promise<Contact> {
     return await this.contactsService.delete(Number(id));

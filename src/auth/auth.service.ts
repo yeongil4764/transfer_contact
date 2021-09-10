@@ -41,8 +41,10 @@ export class AuthService {
 
     delete user.password;
 
+    const payload = {name: user.name, role: user.role}
+
     return {
-      aceessToken: this.jwtService.sign({ name }).toString(),
+      aceessToken: this.jwtService.sign(payload).toString(),
       user,
     };
   }
