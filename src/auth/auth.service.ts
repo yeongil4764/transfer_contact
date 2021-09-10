@@ -39,8 +39,11 @@ export class AuthService {
       throw new UnauthorizedException();
     }
 
+    delete user.password;
+
     return {
-      aceess_token: this.jwtService.sign({ name }),
+      aceessToken: this.jwtService.sign({ name }),
+      user,
     };
   }
 }
