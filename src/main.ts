@@ -4,8 +4,9 @@ import { AppModule } from './app.module';
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   var cors = require("cors");
+  // "https://address-api2.herokuapp.com"
   const corsOptions = {
-    origin: ["https://address-api2.herokuapp.com"],
+    origin: ["http://localhost:3000"],
     credentials: true,
   }
   app.enableCors();
