@@ -42,7 +42,7 @@ export class AuthService {
     delete user.password;
 
     return {
-      aceessToken: this.jwtService.sign({ name }),
+      aceessToken: this.jwtService.sign({ name }).toString(),
       user,
     };
   }
