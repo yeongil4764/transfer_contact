@@ -45,7 +45,6 @@ export class AuthService {
 
     return {
       aceessToken: this.jwtService.sign(payload).toString(),
-      user,
     };
   }
 }
