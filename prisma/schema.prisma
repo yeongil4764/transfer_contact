@@ -23,6 +23,11 @@ model User {
   role Role[]
 }
 
+model Token {
+  id Int @id @default(autoincrement())
+  token String
+}
+
 enum Role {
   USER
   ADMIN

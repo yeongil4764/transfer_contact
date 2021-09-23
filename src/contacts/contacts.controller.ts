@@ -8,7 +8,8 @@ import {
   Put,
   UseGuards,
 } from '@nestjs/common';
-import { Contact, Prisma } from '@prisma/client';
+import { Contact, Prisma, Token } from '@prisma/client';
+import { AuthService } from 'src/auth/auth.service';
 import { hasRoles } from 'src/auth/decorator/roles.decorator';
 import { JwtAuthGuard } from 'src/auth/guard/jwt-auth.guard';
 import { RolesGuard } from 'src/auth/guard/roles.guard';
@@ -18,7 +19,10 @@ import { ContactsService } from './contacts.service';
 @hasRoles('USER')
 @Controller('contacts')
 export class ContactsController {
-  constructor(private contactsService: ContactsService) {}
+  constructor(
+    private contactsService: ContactsService,
+    private authService: AuthService,
+  ) {}
 
   @Get()
   async getAll(): Promise<Contact[]> {
@@ -46,9 +50,13 @@ export class ContactsController {
   }
 
   @hasRoles('ADMIN')
-  @UseGuards(RolesGuard)
   @Delete('/:id')
   async delete(@Param('id') id): Promise<Contact> {
     return await this.contactsService.delete(Number(id));
+  }
+
+  @Delete('rt/:id')
+  async deleteRt(@Param('id') id): Promise<Token> {
+    return await this.authService.deleteRefreshToken(Number(id));
   }
 }

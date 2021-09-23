@@ -1,3 +1,4 @@
+import { Prisma, Token } from '.prisma/client';
 import {
   Injectable,
   NotFoundException,
@@ -24,7 +25,7 @@ export class AuthService {
     return null;
   }
 
-  async login(user: any) {
+  async login(user: any, rtcheck: boolean): Promise<any> {
     const { name, password } = user;
     const userinfo = await this.prismaService.user.findUnique({
       where: { name },
@@ -41,10 +42,46 @@ export class AuthService {
 
     delete user.password;
 
-    const payload = {name: user.name, role: user.role}
+    const payload = { name: user.name, role: user.role };
 
-    return {
-      accessToken: this.jwtService.sign(payload).toString(),
-    };
+    const accesstoken = this.jwtService.sign(payload);
+    
+    if(!rtcheck) {
+      return {
+        accesstoken: accesstoken,
+        exireAt: this.jwtService.decode(accesstoken)['exp'],
+        user: payload,
+      }
+
+    } else {
+      const refreshtoken = this.jwtService.sign(payload, {
+        secret: 'REFRESHSECRET',
+        expiresIn: '7D',
+      });
+  
+      const { id } = await this.createRefreshToken(refreshtoken);
+      
+      return {
+        accessToken: accesstoken,
+        expireAt: this.jwtService.decode(accesstoken)['exp'],
+        rtid: id,
+        user: payload,
+      };
+    }
+  }
+
+  //리프레쉬 토큰이 들어오면 접근토큰을 재발급 해주는 함수가 필요함.
+
+
+  async createRefreshToken(rt: string): Promise<Token> {
+    let token: Prisma.TokenCreateInput;
+    token = { token: rt };
+    return await this.prismaService.token.create({
+      data: token,
+    });
+  }
+
+  async deleteRefreshToken(id): Promise<Token> {
+    return this.prismaService.token.delete({ where: { id } });
   }
 }
