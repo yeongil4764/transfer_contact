@@ -55,7 +55,7 @@ export class AuthService {
 
     return {
       accessToken: accesstoken,
-      expireAt: this.jwtService.decode(accesstoken)['exp'] * 1000,
+      expireAt: this.jwtService.decode(accesstoken)['exp'],
       rtid: id,
       user: payload,
     };
@@ -75,7 +75,7 @@ export class AuthService {
 
       return {
         accesstoken: accessToken,
-        expireAt: this.jwtService.decode(accessToken)['exp'] * 1000,
+        expireAt: this.jwtService.decode(accessToken)['exp'],
         user: payload,
       };
     }
