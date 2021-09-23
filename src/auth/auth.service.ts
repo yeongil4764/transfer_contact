@@ -52,10 +52,11 @@ export class AuthService {
     });
 
     const { id } = await this.createRefreshToken(refreshtoken);
+    const d = new Date(0);
 
     return {
       accessToken: accesstoken,
-      expireAt: this.jwtService.decode(accesstoken)['exp'],
+      expireAt: d.setUTCSeconds(this.jwtService.decode(accesstoken)['exp']),
       rtid: id,
       user: payload,
     };
@@ -72,9 +73,11 @@ export class AuthService {
       const user = await this.userSerivce.findOne(info.name);
       const payload = { name: user.name, role: user.role };
       const accessToken = this.jwtService.sign(payload);
+      const d = new Date(0);
+
       return {
         accesstoken: accessToken,
-        expireAt: this.jwtService.decode(accessToken)['exp'],
+        expireAt: d.setUTCSeconds(this.jwtService.decode(accessToken)['exp']),
         user: payload,
       };
     }
