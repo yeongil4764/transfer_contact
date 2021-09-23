@@ -25,7 +25,7 @@ export class AuthService {
     return null;
   }
 
-  async login(user: any, rtcheck: boolean): Promise<any> {
+  async login(user: any): Promise<any> {
     const { name, password } = user;
     const userinfo = await this.prismaService.user.findUnique({
       where: { name },
@@ -45,33 +45,40 @@ export class AuthService {
     const payload = { name: user.name, role: user.role };
 
     const accesstoken = this.jwtService.sign(payload);
-    
-    if(!rtcheck) {
-      return {
-        accesstoken: accesstoken,
-        exireAt: this.jwtService.decode(accesstoken)['exp'],
-        user: payload,
-      }
 
-    } else {
-      const refreshtoken = this.jwtService.sign(payload, {
-        secret: 'REFRESHSECRET',
-        expiresIn: '7D',
-      });
-  
-      const { id } = await this.createRefreshToken(refreshtoken);
-      
+    const refreshtoken = this.jwtService.sign(payload, {
+      secret: 'REFRESHSECRET',
+      expiresIn: '7D',
+    });
+
+    const { id } = await this.createRefreshToken(refreshtoken);
+
+    return {
+      accessToken: accesstoken,
+      expireAt: this.jwtService.decode(accesstoken)['exp'],
+      rtid: id,
+      user: payload,
+    };
+  }
+
+  async exToken(info: { id: number; name: string }): Promise<any> {
+    let id: Prisma.TokenWhereUniqueInput;
+    id = { id: info.id };
+    const res = this.prismaService.token.findUnique({
+      where: id,
+    });
+
+    if (res) {
+      const user = await this.userSerivce.findOne(info.name);
+      const payload = { name: user.name, role: user.role };
+      const accessToken = this.jwtService.sign(payload);
       return {
-        accessToken: accesstoken,
-        expireAt: this.jwtService.decode(accesstoken)['exp'],
-        rtid: id,
+        accesstoken: accessToken,
+        expireAt: this.jwtService.decode(accessToken)['exp'],
         user: payload,
       };
     }
   }
-
-  //리프레쉬 토큰이 들어오면 접근토큰을 재발급 해주는 함수가 필요함.
-
 
   async createRefreshToken(rt: string): Promise<Token> {
     let token: Prisma.TokenCreateInput;
@@ -81,7 +88,7 @@ export class AuthService {
     });
   }
 
-  async deleteRefreshToken(id): Promise<Token> {
+  async deleteRefreshToken(id: any): Promise<Token> {
     return this.prismaService.token.delete({ where: { id } });
   }
 }

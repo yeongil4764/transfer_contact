@@ -3,7 +3,6 @@ import { Body, Controller, Delete, Param, Post, Request, UseGuards } from '@nest
 import { AuthGuard } from '@nestjs/passport';
 import { AppService } from './app.service';
 import { AuthService } from './auth/auth.service';
-import { hasRoles } from './auth/decorator/roles.decorator';
 
 @Controller()
 export class AppController {
@@ -22,7 +21,15 @@ export class AppController {
   @UseGuards(AuthGuard('local'))
   @Post('login')
   login(@Request() req): any {
-    return this.authService.login(req.user, true);
+    return this.authService.login(req.user);
+  }
+
+  @Post('rt')
+  async exToken(@Body() info: {
+    id: number,
+    name: string,
+  }): Promise<any> {
+    return await this.authService.exToken(info);
   }
 
 }
