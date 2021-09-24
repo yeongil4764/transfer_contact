@@ -44,7 +44,7 @@ export class AuthService {
 
     const payload = { name: user.name, role: user.role };
 
-    const accesstoken = this.jwtService.sign(payload);
+    const accessToken = this.jwtService.sign(payload);
 
     const refreshtoken = this.jwtService.sign(payload, {
       secret: 'REFRESHSECRET',
@@ -54,8 +54,8 @@ export class AuthService {
     const { id } = await this.createRefreshToken(refreshtoken);
 
     return {
-      accessToken: accesstoken,
-      expireAt: this.jwtService.decode(accesstoken)['exp'],
+      accessToken: accessToken,
+      expireAt: this.jwtService.decode(accessToken)['exp'],
       rtid: id,
       user: payload,
     };
@@ -74,7 +74,7 @@ export class AuthService {
       const accessToken = this.jwtService.sign(payload);
 
       return {
-        accesstoken: accessToken,
+        accessToken: accessToken,
         expireAt: this.jwtService.decode(accessToken)['exp'],
         user: payload,
       };
@@ -90,6 +90,6 @@ export class AuthService {
   }
 
   async deleteRefreshToken(id: any): Promise<Token> {
-    return this.prismaService.token.delete({ where: { id } });
+    return await this.prismaService.token.delete({ where: { id } });
   }
 }
